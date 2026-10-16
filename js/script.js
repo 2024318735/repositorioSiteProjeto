@@ -1,40 +1,142 @@
-document.addEventListener("DOMContentLoaded", ()=>{
+document.addEventListener
+("DOMContentLoaded",() => {
     const menuResponsivo = document.getElementById("menuResponsivo");
     const navMenu = document.getElementById("nav-menu");
 
-    menuResponsivo.addEventListener("click",()=>{
-        navMenu.classList.toggle("active")
+    menuResponsivo.
+    addEventListener("click",() =>{
+        navMenu.classList.toggle("active");
+    });
 
-    }); //abre menu responsivo
-
-    const navLinks = document.querySelectorAll(".nav-menu a");
+    const navLinks = document.
+    querySelectorAll(".nav-menu a");
     navLinks.forEach((link) => {
-        link.addEventListener("click", () => {
+        link.addEventListener("click", () =>{
         navMenu.classList.remove("active");
         });
-    }); //fecha menu responsivo
-
-    const slides = document.querySelectorAll("carousel-slide");
+    });
+     
+    const slides = document.querySelectorAll(".carousel-slide");
     const dots = document.querySelectorAll(".dot");
     const prevBtn = document.getElementById("prevBtn");
     const nextBtn = document.getElementById("nextBtn");
     let slideAtual = 0;
     let slideIntervalo;
 
-
     function showSlide(index){
-        slides.forEach((slide) =>
+        slides.forEach((slide) => 
         slide.classList.remove("active"));
-        dots.forEach((dot) =>
-        dot.classList.remove("active"));
-       
-        slideAtual = (index + slides.length)
+        dots.forEach((dot) => dot.classList.remove("active"));
+
+        slideAtual = (index + slides.length) 
             % slides.length;
-       
+        
         slides[slideAtual].classList.add("active");
         dots[slideAtual].classList.add("active");
 
+    }
+
+    function nextSlide(){
+        showSlide(slideAtual + 1);
+    }
+
+    function prevSlide(){
+        showSlide(slideAtual - 1);
+    }
+
+    function startSlide(){
+        slideIntervalo = setInterval(nextSlide,5000);
+    }    
+
+    function stopSlide(){
+        console.log("Valor intervalo", slideIntervalo);
+        clearInterval(slideIntervalo);
+    }
+
+    nextBtn.addEventListener("click", () => {
+        nextSlide();
+        stopSlide();
+        startSlide();
+    });
+
+    prevBtn.addEventListener("click", () =>{
+        prevSlide();
+        stopSlide();
+        startSlide();
+    });
+
+    dots.forEach((dot) =>{
+        dot.addEventListener("click", (e) =>{
+            const index = parseInt(e.target.getAttribute("data-index"));
+            showSlide(index);
+            stopSlide();
+            startSlide();
+            
+        });
+    });
+
+    startSlide();
+
+    //Validação do formulário 
+    const contatoForm = document.getElementById("contatoForm");
+    const nome = document.getElementById("nome");
+    const email = document.getElementById("email");
+    const mensagem = document.getElementById("mensagem");
+
+    function isValidEMail(email){
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return emailRegex.test(email);
 
     }
-   
-});//final função evento carregar todo html
+
+
+    contatoForm.addEventListener("submit", (event) =>{
+        event.preventDefault();
+
+        let isValid = true;
+
+        //validação do campo nome (verificar mínimo 3 caracteres)
+        if(nome.value.trim().length < 3 )
+        {
+            showError(nome,"O nome deve ter no mínimo 3 caracteres piazão");
+            isValid = false;
+        }
+
+        //Validação do campo E-mail
+        if(!isValidEmail(email.value.trim()))
+        {
+            showError(email, "insira um email válido");
+            isValid = false;
+        }
+
+        //Validação do campo mensagem
+
+        if(mensagem.value.trim().length < 10)
+        {
+            showError(mensagem, "insira uma mensagem com no mínimo 10 caracteres né piá");
+            isValid = false;
+        }
+
+        //Validar se estiver tudo correto
+        if(isValid)
+        {
+            clearError();
+            alert("Mensagem enviada com sucesso");
+            contatoForm.requestFullscreen();
+
+            function showError(inputElement, mensagem){
+                const formGroup = inputElement.parentElement;
+                
+                inputElement.classList.add("input-error");
+
+                const errorMensagem = document.createElement("small");
+                errorMensagem.className = "error-text";
+                errorMensagem.innerText = mensagem;
+                formGroup.appendChild(errorMensagem);
+            }
+
+        }
+    });
+
+
+}); //Fechamento do evento carregar página html
